@@ -2,7 +2,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
@@ -10,11 +9,12 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import GlassBackground from '../components/GlassBackground';
-import {glassmorphismStyles} from '../styles/glassmorphism';
+import Card from '../components/Card';
+import {useTheme} from '../context/ThemeContext';
 
 const Home = ({navigation, onLogout}) => {
   const [username, setUsername] = useState('');
+  const {isDarkMode} = useTheme();
 
   useFocusEffect(
     useCallback(() => {
@@ -37,22 +37,22 @@ const Home = ({navigation, onLogout}) => {
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: '#000000',
+        backgroundColor: isDarkMode ? '#000000' : '#FFFFFF',
       },
-      headerTintColor: '#FFFFFF',
+      headerTintColor: isDarkMode ? '#FFFFFF' : '#111827',
       headerTitleStyle: {
         fontWeight: 'bold',
-        color: '#FFFFFF',
+        color: isDarkMode ? '#FFFFFF' : '#111827',
       },
       headerRight: () => (
         <TouchableOpacity
           onPress={handleLogout}
-          style={styles.logoutButton}>
-          <Icon name="logout" size={24} color="#FFFFFF" />
+          className="mr-4 p-2 rounded-lg bg-red-100 dark:bg-red-900">
+          <Icon name="logout" size={24} color="#EF4444" />
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [navigation, isDarkMode]);
 
   const menuItems = [
     {
@@ -76,164 +76,61 @@ const Home = ({navigation, onLogout}) => {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
-      <GlassBackground>
-        <View style={styles.content}>
-          {/* Welcome Section */}
-          <View style={styles.welcomeSection}>
-            <View style={[glassmorphismStyles.glassCard, styles.welcomeCard]}>
-              <Text style={[glassmorphismStyles.glassTitle, styles.welcomeTitle]}>
-                Welcome Back
-              </Text>
-              <Text style={[glassmorphismStyles.glassSubtitle, styles.welcomeSubtitle]}>
-                {username}
-              </Text>
-            </View>
-          </View>
+    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <View className="p-6">
+        {/* Welcome Section */}
+        <Card style="mb-6 items-center">
+          <Text className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark">
+            Welcome Back
+          </Text>
+          <Text className="text-xl text-text-secondary-light dark:text-text-secondary-dark mt-2">
+            {username}
+          </Text>
+        </Card>
 
-          {/* Menu Section */}
-          <View style={styles.menuSection}>
-            <Text style={[glassmorphismStyles.glassText, styles.sectionTitle]}>
-              Quick Actions
-            </Text>
-            
-            {menuItems.map((item, index) => (
-              <GlassCard
-                key={index}
-                title={item.title}
-                subtitle={item.subtitle}
-                icon={item.icon}
-                onPress={() => navigation.navigate(item.navigateTo)}
-                style={styles.menuItem}
-              />
-            ))}
-          </View>
+        {/* Menu Section */}
+        <View className="mb-6">
+          <Text className="text-xl font-bold text-text-primary-light dark:text-text-primary-dark mb-4">
+            Quick Actions
+          </Text>
 
-          {/* Stats Section */}
-          <View style={styles.statsSection}>
-            <View style={[glassmorphismStyles.glassCard, styles.statsCard]}>
-              <Text style={[glassmorphismStyles.glassText, styles.statsTitle]}>
-                System Status
-              </Text>
-              <View style={styles.statsRow}>
-                <View style={styles.statItem}>
-                  <Icon name="check-circle" size={24} color="#34D399" />
-                  <Text style={[glassmorphismStyles.glassSubtitle, styles.statText]}>
-                    Online
-                  </Text>
+          {menuItems.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => navigation.navigate(item.navigateTo)}
+              className="bg-card-light dark:bg-card-dark rounded-2xl p-4 mb-4 flex-row items-center shadow-md">
+                <View className="w-14 h-14 rounded-full bg-primary-light dark:bg-primary-dark justify-center items-center mr-4">
+                  <Icon name={item.icon} size={30} color={isDarkMode ? '#000000' : '#FFFFFF'} />
                 </View>
-                <View style={styles.statItem}>
-                  <Icon name="sync" size={24} color="#60A5FA" />
-                  <Text style={[glassmorphismStyles.glassSubtitle, styles.statText]}>
-                    Synced
-                  </Text>
+                <View className="flex-1">
+                  <Text className="text-lg font-semibold text-text-primary-light dark:text-text-primary-dark">{item.title}</Text>
+                  <Text className="text-sm text-text-secondary-light dark:text-text-secondary-dark">{item.subtitle}</Text>
                 </View>
-              </View>
-            </View>
-          </View>
+                <Icon name="chevron-right" size={24} className="text-text-secondary-light dark:text-text-secondary-dark" />
+            </TouchableOpacity>
+          ))}
         </View>
-      </GlassBackground>
+
+        {/* Stats Section */}
+        <Card>
+          <Text className="text-lg font-bold text-text-primary-light dark:text-text-primary-dark mb-4 text-center">
+            System Status
+          </Text>
+          <View className="flex-row justify-around">
+            <View className="items-center">
+              <Icon name="check-circle" size={24} color="#34D399" />
+              <Text className="text-text-secondary-light dark:text-text-secondary-dark mt-1">Online</Text>
+            </View>
+            <View className="items-center">
+              <Icon name="sync" size={24} color="#60A5FA" />
+              <Text className="text-text-secondary-light dark:text-text-secondary-dark mt-1">Synced</Text>
+            </View>
+          </View>
+        </Card>
+      </View>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  logoutButton: {
-    marginRight: 15,
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-  },
-  welcomeSection: {
-    marginBottom: 24,
-  },
-  welcomeCard: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  welcomeTitle: {
-    fontSize: 28,
-    marginBottom: 8,
-  },
-  welcomeSubtitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  menuSection: {
-    flex: 1,
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 16,
-  },
-  menuItem: {
-    padding: 20,
-    marginBottom: 12,
-  },
-  menuItemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  menuItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  menuTextContainer: {
-    flex: 1,
-  },
-  menuTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  menuSubtitle: {
-    fontSize: 14,
-  },
-  statsSection: {
-    marginBottom: 20,
-  },
-  statsCard: {
-    padding: 20,
-  },
-  statsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statText: {
-    marginTop: 4,
-    fontSize: 12,
-  },
-});
-
 export default Home;
-

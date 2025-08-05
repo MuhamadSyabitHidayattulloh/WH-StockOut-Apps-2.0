@@ -9,6 +9,7 @@ import WOInstruction from './src/pages/WOInstruction';
 import FullCameraScan from './src/pages/FullCameraScan';
 import Settings from './src/pages/Settings';
 import About from './src/pages/About';
+import { View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,87 +29,67 @@ const AppContent = () => {
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: isDarkMode ? '#000000' : '#F5F5F5',
-          },
-          headerTintColor: isDarkMode ? '#FFFFFF' : '#000000',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            color: isDarkMode ? '#FFFFFF' : '#000000',
-          },
-        }}>
-        {!isLoggedIn ? (
-          <>
-            <Stack.Screen
-              name="Login"
-              options={{headerShown: false}}>
-              {props => <Login {...props} onLogin={handleLogin} />}
-            </Stack.Screen>
-            <Stack.Screen
-              name="Register"
-              component={Register}
-              options={{
-                title: 'Create Account',
-                headerStyle: {
-                  backgroundColor: isDarkMode ? '#000000' : '#F5F5F5',
-                },
-                headerTintColor: isDarkMode ? '#FFFFFF' : '#000000',
-              }}
-            />
-          </>
-        ) : (
-          <>
-            <Stack.Screen
-              name="Home"
-              options={{
-                title: 'WH StockOut Apps',
-                headerLeft: () => null,
-              }}>
-              {props => <Home {...props} onLogout={handleLogout} />}
-            </Stack.Screen>
-            <Stack.Screen
-              name="WOInstruction"
-              component={WOInstruction}
-              options={{
-                title: 'Stock Out Part WH',
-              }}
-            />
-            <Stack.Screen
-              name="Settings"
-              component={Settings}
-              options={{
-                title: 'Settings',
-                headerStyle: {
-                  backgroundColor: isDarkMode ? '#000000' : '#F5F5F5',
-                },
-                headerTintColor: isDarkMode ? '#FFFFFF' : '#000000',
-              }}
-            />
-            <Stack.Screen
-              name="About"
-              component={About}
-              options={{
-                title: 'About',
-                headerStyle: {
-                  backgroundColor: isDarkMode ? '#000000' : '#F5F5F5',
-                },
-                headerTintColor: isDarkMode ? '#FFFFFF' : '#000000',
-              }}
-            />
-            <Stack.Screen
-              name="Full Camera Scan"
-              component={FullCameraScan}
-              options={{
-                headerShown: false,
-              }}
-            />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View className={isDarkMode ? 'dark' : 'light'} style={{flex: 1}}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {!isLoggedIn ? (
+            <>
+              <Stack.Screen
+                name="Login"
+                options={{headerShown: false}}>
+                {props => <Login {...props} onLogin={handleLogin} />}
+              </Stack.Screen>
+              <Stack.Screen
+                name="Register"
+                component={Register}
+                options={{
+                  title: 'Create Account',
+                }}
+              />
+            </>
+          ) : (
+            <>
+              <Stack.Screen
+                name="Home"
+                options={{
+                  title: 'WH StockOut Apps',
+                  headerLeft: () => null,
+                }}>
+                {props => <Home {...props} onLogout={handleLogout} />}
+              </Stack.Screen>
+              <Stack.Screen
+                name="WOInstruction"
+                component={WOInstruction}
+                options={{
+                  title: 'Stock Out Part WH',
+                }}
+              />
+              <Stack.Screen
+                name="Settings"
+                component={Settings}
+                options={{
+                  title: 'Settings',
+                }}
+              />
+              <Stack.Screen
+                name="About"
+                component={About}
+                options={{
+                  title: 'About',
+                }}
+              />
+              <Stack.Screen
+                name="Full Camera Scan"
+                component={FullCameraScan}
+                options={{
+                  headerShown: false,
+                }}
+              />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </View>
   );
 };
 
@@ -121,4 +102,3 @@ const App = () => {
 };
 
 export default App;
-

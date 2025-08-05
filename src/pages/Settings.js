@@ -1,67 +1,37 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
-import GlassBackground from '../components/GlassBackground';
-import { createGlassmorphismStyles } from '../styles/glassmorphism';
-import { useTheme } from '../context/ThemeContext';
+import { View, Text, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import Card from '../components/Card';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import ThemeToggle from '../components/ThemeToggle';
-import GlassCard from '../components/GlassCard';
+import { useTheme } from '../context/ThemeContext';
 
 const Settings = ({ navigation }) => {
   const { isDarkMode } = useTheme();
-  const glassmorphismStyles = createGlassmorphismStyles(isDarkMode);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={isDarkMode ? '#000000' : '#F5F5F5'}
-      />
-      <GlassBackground>
-        <View style={styles.content}>
-          <Text style={[glassmorphismStyles.glassTitle, styles.title]}>Settings</Text>
-          <GlassCard title="Theme" style={styles.settingCard}>
-            <View style={styles.settingItem}>
-              <Text style={[glassmorphismStyles.glassText, styles.settingText]}>Dark Mode</Text>
-              <ThemeToggle />
+    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <View className="p-6">
+        <Text className="text-4xl font-bold text-text-primary-light dark:text-text-primary-dark mb-8">Settings</Text>
+
+        <Card style="mb-4">
+          <View className="flex-row justify-between items-center">
+            <Text className="text-lg text-text-primary-light dark:text-text-primary-dark">Dark Mode</Text>
+            <ThemeToggle />
+          </View>
+        </Card>
+
+        <TouchableOpacity onPress={() => navigation.navigate('About')}>
+          <Card>
+            <View className="flex-row justify-between items-center">
+              <Text className="text-lg text-text-primary-light dark:text-text-primary-dark">About App</Text>
+              <Icon name="info-outline" size={24} className="text-text-secondary-light dark:text-text-secondary-dark" />
             </View>
-          </GlassCard>
-          <GlassCard
-            title="About App"
-            icon="info-outline"
-            onPress={() => navigation.navigate('About')}
-            style={styles.settingCard}
-          />
-        </View>
-      </GlassBackground>
+          </Card>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  settingCard: {
-    marginBottom: 20,
-  },
-  settingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  settingText: {
-    fontSize: 16,
-  },
-});
-
 export default Settings;
-

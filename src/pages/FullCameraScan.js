@@ -2,16 +2,16 @@ import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import {Camera, useCameraDevices} from 'react-native-vision-camera';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {glassmorphismStyles} from '../styles/glassmorphism';
+import Card from '../components/Card';
+import Button from '../components/Button';
+import {useTheme} from '../context/ThemeContext';
 
 const FullCameraScan = ({navigation, route}) => {
   const [hasPermission, setHasPermission] = useState(false);
@@ -20,6 +20,7 @@ const FullCameraScan = ({navigation, route}) => {
   const camera = useRef(null);
   const devices = useCameraDevices();
   const device = devices.back;
+  const {isDarkMode} = useTheme();
 
   const {scanRead} = route.params || {};
 
@@ -67,25 +68,19 @@ const FullCameraScan = ({navigation, route}) => {
 
   if (!hasPermission) {
     return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#000000" />
-        <View style={styles.permissionContainer}>
-          <View style={[glassmorphismStyles.glassCard, styles.permissionCard]}>
-            <Icon name="camera-alt" size={64} color="#FFFFFF" style={styles.permissionIcon} />
-            <Text style={[glassmorphismStyles.glassTitle, styles.permissionTitle]}>
+      <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <View className="flex-1 justify-center items-center p-6">
+          <Card style="w-full items-center">
+            <Icon name="camera-alt" size={64} className="text-text-primary-light dark:text-text-primary-dark mb-6" />
+            <Text className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark mb-4">
               Camera Permission Required
             </Text>
-            <Text style={[glassmorphismStyles.glassSubtitle, styles.permissionText]}>
+            <Text className="text-base text-text-secondary-light dark:text-text-secondary-dark text-center mb-6">
               Please grant camera permission to scan QR codes
             </Text>
-            <TouchableOpacity
-              style={[glassmorphismStyles.glassButton, styles.permissionButton]}
-              onPress={checkCameraPermission}>
-              <Text style={glassmorphismStyles.glassText}>
-                Grant Permission
-              </Text>
-            </TouchableOpacity>
-          </View>
+            <Button title="Grant Permission" onPress={checkCameraPermission} />
+          </Card>
         </View>
       </SafeAreaView>
     );
@@ -93,30 +88,30 @@ const FullCameraScan = ({navigation, route}) => {
 
   if (!device) {
     return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#000000" />
-        <View style={styles.permissionContainer}>
-          <View style={[glassmorphismStyles.glassCard, styles.permissionCard]}>
-            <Icon name="camera-alt" size={64} color="#FFFFFF" style={styles.permissionIcon} />
-            <Text style={[glassmorphismStyles.glassTitle, styles.permissionTitle]}>
+      <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <View className="flex-1 justify-center items-center p-6">
+          <Card style="w-full items-center">
+            <Icon name="camera-alt" size={64} className="text-text-primary-light dark:text-text-primary-dark mb-6" />
+            <Text className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark mb-4">
               Camera Not Available
             </Text>
-            <Text style={[glassmorphismStyles.glassSubtitle, styles.permissionText]}>
-              No camera device found
+            <Text className="text-base text-text-secondary-light dark:text-text-secondary-dark text-center">
+              No camera device found on this device.
             </Text>
-          </View>
+          </Card>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-black">
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
       <Camera
         ref={camera}
-        style={styles.camera}
+        style={{flex: 1}}
         device={device}
         isActive={isActive}
         torch={flashOn ? 'on' : 'off'}
@@ -127,23 +122,21 @@ const FullCameraScan = ({navigation, route}) => {
       />
 
       {/* Overlay */}
-      <View style={styles.overlay}>
+      <View className="absolute top-0 left-0 right-0 bottom-0 justify-between">
         {/* Header */}
-        <View style={styles.header}>
+        <View className="flex-row items-center justify-between p-5 pt-10 bg-black/30">
           <TouchableOpacity
-            style={[glassmorphismStyles.glassButton, styles.headerButton]}
+            className="w-12 h-12 justify-center items-center rounded-full bg-black/50"
             onPress={() => navigation.goBack()}>
             <Icon name="arrow-back" size={24} color="#FFFFFF" />
           </TouchableOpacity>
           
-          <View style={[glassmorphismStyles.glassContainer, styles.titleContainer]}>
-            <Text style={[glassmorphismStyles.glassText, styles.headerTitle]}>
-              Scan QR Code
-            </Text>
-          </View>
+          <Text className="text-white text-lg font-bold">
+            Scan QR Code
+          </Text>
           
           <TouchableOpacity
-            style={[glassmorphismStyles.glassButton, styles.headerButton]}
+            className="w-12 h-12 justify-center items-center rounded-full bg-black/50"
             onPress={toggleFlash}>
             <Icon 
               name={flashOn ? "flash-on" : "flash-off"} 
@@ -154,22 +147,22 @@ const FullCameraScan = ({navigation, route}) => {
         </View>
 
         {/* Scanning Area */}
-        <View style={styles.scanningArea}>
-          <View style={styles.scanFrame}>
-            <View style={[styles.corner, styles.topLeft]} />
-            <View style={[styles.corner, styles.topRight]} />
-            <View style={[styles.corner, styles.bottomLeft]} />
-            <View style={[styles.corner, styles.bottomRight]} />
+        <View className="flex-1 justify-center items-center">
+          <View className="w-64 h-64 relative">
+            <View className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white" />
+            <View className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white" />
+            <View className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-white" />
+            <View className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white" />
           </View>
         </View>
 
         {/* Instructions */}
-        <View style={styles.instructions}>
-          <View style={[glassmorphismStyles.glassCard, styles.instructionCard]}>
-            <Text style={[glassmorphismStyles.glassText, styles.instructionText]}>
+        <View className="p-5 pb-10 items-center">
+          <View className="bg-black/50 p-4 rounded-lg">
+            <Text className="text-white font-semibold text-center mb-2">
               Position the QR code within the frame
             </Text>
-            <Text style={[glassmorphismStyles.glassSubtitle, styles.instructionSubtext]}>
+            <Text className="text-gray-300 text-sm text-center">
               The camera will automatically scan when detected
             </Text>
           </View>
@@ -179,132 +172,4 @@ const FullCameraScan = ({navigation, route}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-  },
-  camera: {
-    flex: 1,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'space-between',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    paddingTop: 60,
-  },
-  headerButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  titleContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  scanningArea: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scanFrame: {
-    width: 250,
-    height: 250,
-    position: 'relative',
-  },
-  corner: {
-    position: 'absolute',
-    width: 30,
-    height: 30,
-    borderColor: '#FFFFFF',
-    borderWidth: 3,
-  },
-  topLeft: {
-    top: 0,
-    left: 0,
-    borderRightWidth: 0,
-    borderBottomWidth: 0,
-  },
-  topRight: {
-    top: 0,
-    right: 0,
-    borderLeftWidth: 0,
-    borderBottomWidth: 0,
-  },
-  bottomLeft: {
-    bottom: 0,
-    left: 0,
-    borderRightWidth: 0,
-    borderTopWidth: 0,
-  },
-  bottomRight: {
-    bottom: 0,
-    right: 0,
-    borderLeftWidth: 0,
-    borderTopWidth: 0,
-  },
-  instructions: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  instructionCard: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  instructionText: {
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  instructionSubtext: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  permissionContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#000000',
-  },
-  permissionCard: {
-    padding: 32,
-    alignItems: 'center',
-    width: '100%',
-  },
-  permissionIcon: {
-    marginBottom: 24,
-  },
-  permissionTitle: {
-    fontSize: 24,
-    marginBottom: 16,
-  },
-  permissionText: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  permissionButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-  },
-});
-
 export default FullCameraScan;
-

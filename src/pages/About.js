@@ -1,94 +1,63 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, StatusBar, ScrollView } from 'react-native';
-import GlassBackground from '../components/GlassBackground';
-import { createGlassmorphismStyles } from '../styles/glassmorphism';
+import { View, Text, SafeAreaView, StatusBar, ScrollView } from 'react-native';
+import Card from '../components/Card';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTheme } from '../context/ThemeContext';
-import GlassCard from '../components/GlassCard';
+
+const InfoCard = ({ title, icon, children }) => (
+  <Card style="mb-4">
+    <View className="flex-row items-center mb-3">
+      <Icon name={icon} size={24} className="text-text-primary-light dark:text-text-primary-dark" />
+      <Text className="text-xl font-bold text-text-primary-light dark:text-text-primary-dark ml-3">{title}</Text>
+    </View>
+    <Text className="text-base text-text-secondary-light dark:text-text-secondary-dark">{children}</Text>
+  </Card>
+);
 
 const About = () => {
   const { isDarkMode } = useTheme();
-  const glassmorphismStyles = createGlassmorphismStyles(isDarkMode);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={isDarkMode ? '#000000' : '#F5F5F5'}
-      />
-      <GlassBackground>
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.content}>
-            <Text style={[glassmorphismStyles.glassTitle, styles.title]}>About</Text>
-            
-            <GlassCard title="WH StockOut Apps 2.0" icon="inventory" style={styles.infoCard}>
-              <Text style={[glassmorphismStyles.glassText, styles.description]}>
-                Aplikasi untuk mengelola stok keluar warehouse dengan sistem scan QR code Kanban.
-              </Text>
-            </GlassCard>
+    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <ScrollView>
+        <View className="p-6">
+          <Text className="text-4xl font-bold text-text-primary-light dark:text-text-primary-dark mb-8 text-center">About</Text>
 
-            <GlassCard title="Version" icon="code" style={styles.infoCard}>
-              <Text style={[glassmorphismStyles.glassText, styles.description]}>
-                Version 2.0.0{'\n'}
-                React Native 0.80.2
-              </Text>
-            </GlassCard>
+          <InfoCard title="WH StockOut Apps 2.0" icon="inventory">
+            Aplikasi untuk mengelola stok keluar warehouse dengan sistem scan QR code Kanban.
+          </InfoCard>
 
-            <GlassCard title="Developer" icon="person" style={styles.infoCard}>
-              <Text style={[glassmorphismStyles.glassText, styles.description]}>
-                PED - Denso Indonesia{'\n'}
-                2025
-              </Text>
-            </GlassCard>
+          <InfoCard title="Version" icon="code">
+            Version 2.0.0{"\n"}
+            React Native 0.80.2
+          </InfoCard>
 
-            <GlassCard title="Features" icon="star" style={styles.infoCard}>
-              <Text style={[glassmorphismStyles.glassText, styles.description]}>
-                • QR Code Scanning{'\n'}
-                • Kanban Management{'\n'}
-                • Stock Out Tracking{'\n'}
-                • Dark/Light Mode{'\n'}
-                • Modern Glassmorphism UI
-              </Text>
-            </GlassCard>
+          <InfoCard title="Developer" icon="person">
+            PED - Denso Indonesia{"\n"}
+            2025
+          </InfoCard>
 
-            <GlassCard title="Technology Stack" icon="build" style={styles.infoCard}>
-              <Text style={[glassmorphismStyles.glassText, styles.description]}>
-                • React Native 0.80.2{'\n'}
-                • React Navigation{'\n'}
-                • AsyncStorage{'\n'}
-                • React Native Vision Camera{'\n'}
-                • Lottie Animations{'\n'}
-                • Vector Icons
-              </Text>
-            </GlassCard>
-          </View>
-        </ScrollView>
-      </GlassBackground>
+          <InfoCard title="Features" icon="star">
+            • QR Code Scanning{"\n"}
+            • Kanban Management{"\n"}
+            • Stock Out Tracking{"\n"}
+            • Light/Dark Mode
+          </InfoCard>
+
+          <InfoCard title="Technology Stack" icon="build">
+            • React Native 0.80.2{"\n"}
+            • React Navigation{"\n"}
+            • AsyncStorage{"\n"}
+            • React Native Vision Camera{"\n"}
+            • Lottie Animations{"\n"}
+            • Vector Icons{"\n"}
+            • NativeWind (Tailwind)
+          </InfoCard>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 20,
-  },
-  title: {
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  infoCard: {
-    marginBottom: 20,
-  },
-  description: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-});
-
 export default About;
-

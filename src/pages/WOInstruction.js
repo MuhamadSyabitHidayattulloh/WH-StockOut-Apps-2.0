@@ -2,7 +2,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {
   DeviceEventEmitter,
   Modal,
-  StyleSheet,
   Text,
   Vibration,
   View,
@@ -19,17 +18,13 @@ import SoundPlayer from 'react-native-sound-player';
 import FastImage from '@d11/react-native-fast-image';
 import LottieView from 'lottie-react-native';
 import {useFocusEffect} from '@react-navigation/native';
-import GlassBackground from '../components/GlassBackground';
-import GlassInput from '../components/GlassInput';
-import GlassTable from '../components/GlassTable';
-import AnimatedGlassButton from '../components/AnimatedGlassButton';
-import {createGlassmorphismStyles} from '../styles/glassmorphism';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import Card from '../components/Card';
+import Table from '../components/Table';
 import {useTheme} from '../context/ThemeContext';
 
 const WOInstruction = ({navigation}) => {
-  const {isDarkMode} = useTheme();
-  const glassmorphismStyles = createGlassmorphismStyles(isDarkMode);
-  
   const [data, setData] = useState([]);
   const [username, setUsername] = useState('');
   const [userId, setUserId] = useState('');
@@ -38,6 +33,7 @@ const WOInstruction = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [wrongQR, setWrongQR] = useState(false);
+  const {isDarkMode} = useTheme();
 
   useFocusEffect(
     useCallback(() => {
@@ -50,7 +46,7 @@ const WOInstruction = ({navigation}) => {
       return () => {
         subscription.remove();
       };
-    }, [userId]),
+    }, [userId, data]), // Added data to dependency array
   );
 
   useFocusEffect(
@@ -88,10 +84,8 @@ const WOInstruction = ({navigation}) => {
   const handleScanIntent = async e => {
     if (e.length === 30) {
       const oneWayKanbanQR = new GenerateOneWayKanban(e);
-      const currentData =
-        JSON.parse(await AsyncStorage.getItem('stockOutData')) || [];
 
-      if (currentData.some(item => item.imgData === e)) {
+      if (data.some(item => item.imgData === e)) {
         showModalDuplicateKanban();
         return;
       }
@@ -105,7 +99,7 @@ const WOInstruction = ({navigation}) => {
         processId: generateProcessId(),
       };
 
-      const updatedData = [newData, ...currentData];
+      const updatedData = [newData, ...data];
       await AsyncStorage.setItem('stockOutData', JSON.stringify(updatedData));
       setData(updatedData);
     } else {
@@ -148,7 +142,7 @@ const WOInstruction = ({navigation}) => {
           slip: slip,
         });
         
-        await AsyncStorage.clear();
+        await AsyncStorage.removeItem('stockOutData');
         setData([]);
         setLoading(false);
         Alert.alert('Success', 'Data submitted successfully');
@@ -209,83 +203,74 @@ const WOInstruction = ({navigation}) => {
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: '#000000',
+        backgroundColor: isDarkMode ? '#000000' : '#FFFFFF',
       },
-      headerTintColor: '#FFFFFF',
+      headerTintColor: isDarkMode ? '#FFFFFF' : '#111827',
       headerTitleStyle: {
         fontWeight: 'bold',
-        color: '#FFFFFF',
+        color: isDarkMode ? '#FFFFFF' : '#111827',
       },
     });
-  }, [navigation]);
+  }, [navigation, isDarkMode]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
-      <GlassBackground>
-        <View style={styles.content}>
-          {/* Header Section */}
-          <View style={styles.headerSection}>
-            <View style={[glassmorphismStyles.glassCard, styles.headerCard]}>
-              <Text style={[glassmorphismStyles.glassTitle, styles.headerTitle]}>
-                Scan Kanban untuk Stockout
-              </Text>
-              <Text style={[glassmorphismStyles.glassSubtitle, styles.countText]}>
-                Count: {data.length}
-              </Text>
-            </View>
-          </View>
+    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <View className="flex-1 p-4">
+        {/* Header Section */}
+        <Card style="mb-4 items-center">
+          <Text className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">
+            Scan Kanban untuk Stockout
+          </Text>
+          <Text className="text-lg text-text-secondary-light dark:text-text-secondary-dark mt-2">
+            Count: {data.length}
+          </Text>
+        </Card>
 
-          {/* Table Section */}
-          <View style={styles.tableSection}>
-            <GlassTable
-              headers={[
-                {title: 'No', key: 'no', flex: 1},
-                {title: 'Part Number', key: 'partNumber', flex: 4},
-                {title: 'Qty', key: 'qty', flex: 1.5},
-                {title: 'User', key: 'NPK', flex: 1.5},
-              ]}
-              data={data.map((item, index) => ({
-                ...item,
-                no: index + 1,
-              }))}
-              style={styles.table}
-              maxHeight={300}
-            />
-          </View>
-
-          {/* Action Buttons */}
-          <View style={styles.actionSection}>
-            <View style={styles.buttonRow}>
-              <AnimatedGlassButton
-                title="Scan by Camera"
-                onPress={() =>
-                  navigation.navigate('Full Camera Scan', {
-                    scanRead: handleScanIntent,
-                  })
-                }
-                icon="camera-alt"
-                style={[styles.actionButton, {marginRight: 8}]}
-              />
-              <AnimatedGlassButton
-                title="Selesai Belanja"
-                onPress={handleSubmitData}
-                variant="success"
-                icon="check"
-                style={[styles.actionButton, {marginLeft: 8}]}
-              />
-            </View>
-            
-            <AnimatedGlassButton
-              title="Reset"
-              onPress={() => setModalVisible(true)}
-              variant="danger"
-              icon="refresh"
-              style={styles.resetButton}
-            />
-          </View>
+        {/* Table Section */}
+        <View className="flex-1 mb-4">
+          <Table
+            headers={[
+              {title: 'No', key: 'no', flex: 1},
+              {title: 'Part Number', key: 'partNumber', flex: 4},
+              {title: 'Qty', key: 'qty', flex: 1.5},
+              {title: 'User', key: 'NPK', flex: 1.5},
+            ]}
+            data={data.map((item, index) => ({
+              ...item,
+              no: index + 1,
+            }))}
+            maxHeight={300}
+          />
         </View>
-      </GlassBackground>
+
+        {/* Action Buttons */}
+        <View>
+          <View className="flex-row mb-3">
+            <Button
+              title="Scan by Camera"
+              onPress={() =>
+                navigation.navigate('Full Camera Scan', {
+                  scanRead: handleScanIntent,
+                })
+              }
+              style="flex-1 mr-2"
+            />
+            <Button
+              title="Selesai Belanja"
+              onPress={handleSubmitData}
+              variant="success"
+              style="flex-1 ml-2"
+            />
+          </View>
+
+          <Button
+            title="Reset"
+            onPress={() => setModalVisible(true)}
+            variant="danger"
+          />
+        </View>
+      </View>
 
       {/* Reset Password Modal */}
       <Modal
@@ -293,32 +278,31 @@ const WOInstruction = ({navigation}) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}>
-        <View style={glassmorphismStyles.glassModal}>
-          <View style={glassmorphismStyles.glassModalContent}>
-            <Text style={[glassmorphismStyles.glassText, styles.modalTitle]}>
+        <View className="flex-1 justify-center items-center bg-black/50 p-6">
+          <Card style="w-full">
+            <Text className="text-xl font-bold text-text-primary-light dark:text-text-primary-dark text-center mb-4">
               Masukkan Password
             </Text>
-            <GlassInput
+            <Input
               placeholder="Password"
               secureTextEntry={true}
               value={password}
               onChangeText={setPassword}
-              style={styles.modalInput}
             />
-            <View style={styles.modalButtons}>
-              <AnimatedGlassButton
+            <View className="flex-row">
+              <Button
                 title="Close"
                 onPress={() => setModalVisible(false)}
                 variant="secondary"
-                style={[styles.modalButton, {marginRight: 8}]}
+                style="flex-1 mr-2"
               />
-              <AnimatedGlassButton
+              <Button
                 title="Submit"
                 onPress={resetData}
-                style={[styles.modalButton, {marginLeft: 8}]}
+                style="flex-1 ml-2"
               />
             </View>
-          </View>
+          </Card>
         </View>
       </Modal>
 
@@ -328,23 +312,23 @@ const WOInstruction = ({navigation}) => {
         transparent={true}
         visible={modalDuplicateKanban}
         onRequestClose={() => setModalDuplicateKanban(false)}>
-        <View style={glassmorphismStyles.glassModal}>
-          <View style={glassmorphismStyles.glassModalContent}>
+        <View className="flex-1 justify-center items-center bg-black/50 p-6">
+          <Card style="w-full items-center">
             <FastImage
-              source={require('../assets/gif/false-so-true.gif')}
-              style={styles.gifStyle}
+              source={require('../gif/false-so-true.gif')}
+              style={{width: 200, height: 200, marginBottom: 16}}
               resizeMode="contain"
             />
-            <Text style={[glassmorphismStyles.glassText, styles.duplicateText]}>
+            <Text className="text-xl font-bold text-text-primary-light dark:text-text-primary-dark text-center mb-4">
               DUPLICATE KANBAN WOII
             </Text>
-            <AnimatedGlassButton
+            <Button
               title="Close"
               onPress={() => setModalDuplicateKanban(false)}
               variant="secondary"
-              style={styles.closeButton}
+              style="w-32"
             />
-          </View>
+          </Card>
         </View>
       </Modal>
 
@@ -354,14 +338,14 @@ const WOInstruction = ({navigation}) => {
         transparent={true}
         visible={wrongQR}
         onRequestClose={() => setWrongQR(false)}>
-        <View style={glassmorphismStyles.glassModal}>
+        <View className="flex-1 justify-center items-center bg-black/50">
           <LottieView
-            source={require('../assets/animations/wrong.json')}
+            source={require('../animations/wrong.json')}
             autoPlay
             loop
-            style={styles.animationStyle}
+            style={{width: 200, height: 200}}
           />
-          <Text style={[glassmorphismStyles.glassText, styles.wrongQRText]}>
+          <Text className="text-2xl font-bold text-white text-center mt-4">
             QR Salah
           </Text>
         </View>
@@ -373,12 +357,12 @@ const WOInstruction = ({navigation}) => {
         transparent={true}
         visible={loading}
         onRequestClose={() => setLoading(false)}>
-        <View style={glassmorphismStyles.glassModal}>
+        <View className="flex-1 justify-center items-center bg-black/50">
           <LottieView
-            source={require('../assets/animations/loading.json')}
+            source={require('../animations/loading.json')}
             autoPlay
             loop
-            style={styles.animationStyle}
+            style={{width: 200, height: 200}}
           />
         </View>
       </Modal>
@@ -386,91 +370,4 @@ const WOInstruction = ({navigation}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  headerSection: {
-    marginBottom: 16,
-  },
-  headerCard: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 20,
-    marginBottom: 8,
-  },
-  countText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  tableSection: {
-    flex: 1,
-    marginBottom: 16,
-  },
-  table: {
-    flex: 1,
-  },
-  actionSection: {
-    paddingTop: 16,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  actionButton: {
-    flex: 1,
-  },
-  resetButton: {
-    alignSelf: 'center',
-    width: '50%',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  modalInput: {
-    marginBottom: 20,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  modalButton: {
-    flex: 1,
-  },
-  gifStyle: {
-    width: 200,
-    height: 200,
-    marginBottom: 16,
-  },
-  duplicateText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  closeButton: {
-    width: 100,
-  },
-  animationStyle: {
-    width: 200,
-    height: 200,
-  },
-  wrongQRText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 16,
-  },
-});
-
 export default WOInstruction;
-
