@@ -1,18 +1,21 @@
 import React, {useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {ThemeProvider} from './src/context/ThemeContext';
+import {ThemeProvider, useTheme} from './src/context/ThemeContext';
 import Login from './src/pages/Login';
 import Home from './src/pages/Home';
 import Register from './src/pages/Register';
 import WOInstruction from './src/pages/WOInstruction';
 import FullCameraScan from './src/pages/FullCameraScan';
+import Settings from './src/pages/Settings';
+import About from './src/pages/About';
 
 const Stack = createNativeStackNavigator();
 
 const AppContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
+  const {isDarkMode} = useTheme();
 
   const handleLogin = (user) => {
     setUsername(user);
@@ -29,12 +32,12 @@ const AppContent = () => {
       <Stack.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#000000',
+            backgroundColor: isDarkMode ? '#000000' : '#F5F5F5',
           },
-          headerTintColor: '#FFFFFF',
+          headerTintColor: isDarkMode ? '#FFFFFF' : '#000000',
           headerTitleStyle: {
             fontWeight: 'bold',
-            color: '#FFFFFF',
+            color: isDarkMode ? '#FFFFFF' : '#000000',
           },
         }}>
         {!isLoggedIn ? (
@@ -50,9 +53,9 @@ const AppContent = () => {
               options={{
                 title: 'Create Account',
                 headerStyle: {
-                  backgroundColor: '#000000',
+                  backgroundColor: isDarkMode ? '#000000' : '#F5F5F5',
                 },
-                headerTintColor: '#FFFFFF',
+                headerTintColor: isDarkMode ? '#FFFFFF' : '#000000',
               }}
             />
           </>
@@ -71,6 +74,28 @@ const AppContent = () => {
               component={WOInstruction}
               options={{
                 title: 'Stock Out Part WH',
+              }}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={Settings}
+              options={{
+                title: 'Settings',
+                headerStyle: {
+                  backgroundColor: isDarkMode ? '#000000' : '#F5F5F5',
+                },
+                headerTintColor: isDarkMode ? '#FFFFFF' : '#000000',
+              }}
+            />
+            <Stack.Screen
+              name="About"
+              component={About}
+              options={{
+                title: 'About',
+                headerStyle: {
+                  backgroundColor: isDarkMode ? '#000000' : '#F5F5F5',
+                },
+                headerTintColor: isDarkMode ? '#FFFFFF' : '#000000',
               }}
             />
             <Stack.Screen

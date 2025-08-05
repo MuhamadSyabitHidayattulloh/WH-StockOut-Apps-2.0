@@ -60,7 +60,18 @@ const Home = ({navigation, onLogout}) => {
       subtitle: 'Manage warehouse stock out operations',
       icon: 'inventory',
       navigateTo: 'WOInstruction',
-      color: 'rgba(59, 130, 246, 0.3)',
+    },
+    {
+      title: 'Settings',
+      subtitle: 'App preferences and theme',
+      icon: 'settings',
+      navigateTo: 'Settings',
+    },
+    {
+      title: 'About',
+      subtitle: 'App information and version',
+      icon: 'info',
+      navigateTo: 'About',
     },
   ];
 
@@ -88,40 +99,14 @@ const Home = ({navigation, onLogout}) => {
             </Text>
             
             {menuItems.map((item, index) => (
-              <TouchableOpacity
+              <GlassCard
                 key={index}
-                style={[
-                  glassmorphismStyles.glassCard,
-                  styles.menuItem,
-                  {backgroundColor: item.color},
-                ]}
+                title={item.title}
+                subtitle={item.subtitle}
+                icon={item.icon}
                 onPress={() => navigation.navigate(item.navigateTo)}
-                activeOpacity={0.8}>
-                <View style={styles.menuItemContent}>
-                  <View style={styles.menuItemLeft}>
-                    <View style={styles.iconContainer}>
-                      <Icon
-                        name={item.icon}
-                        size={32}
-                        color="#FFFFFF"
-                      />
-                    </View>
-                    <View style={styles.menuTextContainer}>
-                      <Text style={[glassmorphismStyles.glassText, styles.menuTitle]}>
-                        {item.title}
-                      </Text>
-                      <Text style={[glassmorphismStyles.glassSubtitle, styles.menuSubtitle]}>
-                        {item.subtitle}
-                      </Text>
-                    </View>
-                  </View>
-                  <Icon
-                    name="arrow-forward-ios"
-                    size={20}
-                    color="rgba(255, 255, 255, 0.6)"
-                  />
-                </View>
-              </TouchableOpacity>
+                style={styles.menuItem}
+              />
             ))}
           </View>
 
