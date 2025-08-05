@@ -1,8 +1,28 @@
 import {StyleSheet} from 'react-native';
 
-export const glassmorphismStyles = StyleSheet.create({
+export const createGlassmorphismStyles = (isDarkMode) => StyleSheet.create({
   // Base glassmorphism container
   glassContainer: {
+    backgroundColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.1)' 
+      : 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.2)' 
+      : 'rgba(0, 0, 0, 0.2)',
+    shadowColor: isDarkMode ? '#000' : '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: isDarkMode ? 0.25 : 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+
+  // Dark glassmorphism container (deprecated - use glassContainer with theme)
+  glassContainerDark: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 16,
     borderWidth: 1,
@@ -17,73 +37,69 @@ export const glassmorphismStyles = StyleSheet.create({
     elevation: 8,
   },
 
-  // Dark glassmorphism container
-  glassContainerDark: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-
   // Card glassmorphism
   glassCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.15)' 
+      : 'rgba(0, 0, 0, 0.15)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.2)' 
+      : 'rgba(0, 0, 0, 0.2)',
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: isDarkMode ? '#000' : '#000',
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.2,
+    shadowOpacity: isDarkMode ? 0.2 : 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
 
   // Button glassmorphism
   glassButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.2)' 
+      : 'rgba(0, 0, 0, 0.2)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.3)' 
+      : 'rgba(0, 0, 0, 0.3)',
     paddingVertical: 12,
     paddingHorizontal: 24,
-    shadowColor: '#000',
+    shadowColor: isDarkMode ? '#000' : '#000',
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.2,
+    shadowOpacity: isDarkMode ? 0.2 : 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
 
   // Input glassmorphism
   glassInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.1)' 
+      : 'rgba(0, 0, 0, 0.1)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.2)' 
+      : 'rgba(0, 0, 0, 0.2)',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    color: '#FFFFFF',
+    color: isDarkMode ? '#FFFFFF' : '#000000',
     fontSize: 16,
   },
 
   // Background gradients
   backgroundGradient: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: isDarkMode ? '#000000' : '#F5F5F5',
   },
 
   backgroundGradientLight: {
@@ -93,7 +109,7 @@ export const glassmorphismStyles = StyleSheet.create({
 
   // Text styles
   glassText: {
-    color: '#FFFFFF',
+    color: isDarkMode ? '#FFFFFF' : '#000000',
     fontSize: 16,
     fontWeight: '500',
   },
@@ -105,41 +121,53 @@ export const glassmorphismStyles = StyleSheet.create({
   },
 
   glassTitle: {
-    color: '#FFFFFF',
+    color: isDarkMode ? '#FFFFFF' : '#000000',
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
   },
 
   glassSubtitle: {
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)',
     fontSize: 16,
     textAlign: 'center',
   },
 
   // Table glassmorphism
   glassTable: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.1)' 
+      : 'rgba(0, 0, 0, 0.1)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.2)' 
+      : 'rgba(0, 0, 0, 0.2)',
     overflow: 'hidden',
   },
 
   glassTableHeader: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.2)' 
+      : 'rgba(0, 0, 0, 0.2)',
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.1)' 
+      : 'rgba(0, 0, 0, 0.1)',
   },
 
   glassTableRow: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.05)' 
+      : 'rgba(0, 0, 0, 0.05)',
     paddingVertical: 10,
     paddingHorizontal: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    borderBottomColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.05)' 
+      : 'rgba(0, 0, 0, 0.05)',
   },
 
   // Modal glassmorphism
@@ -151,10 +179,14 @@ export const glassmorphismStyles = StyleSheet.create({
   },
 
   glassModalContent: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.15)' 
+      : 'rgba(0, 0, 0, 0.15)',
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: isDarkMode 
+      ? 'rgba(255, 255, 255, 0.2)' 
+      : 'rgba(0, 0, 0, 0.2)',
     padding: 24,
     margin: 20,
     shadowColor: '#000',

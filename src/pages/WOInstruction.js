@@ -15,17 +15,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {whStockoutApi} from '../api';
 import moment from 'moment';
-import Sound from 'react-native-sound';
-import FastImage from 'react-native-fast-image';
+import SoundPlayer from 'react-native-sound-player';
+import FastImage from '@d11/react-native-fast-image';
 import LottieView from 'lottie-react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import GlassBackground from '../components/GlassBackground';
 import GlassInput from '../components/GlassInput';
 import GlassTable from '../components/GlassTable';
 import AnimatedGlassButton from '../components/AnimatedGlassButton';
-import {glassmorphismStyles} from '../styles/glassmorphism';
+import {createGlassmorphismStyles} from '../styles/glassmorphism';
+import {useTheme} from '../context/ThemeContext';
 
 const WOInstruction = ({navigation}) => {
+  const {isDarkMode} = useTheme();
+  const glassmorphismStyles = createGlassmorphismStyles(isDarkMode);
+  
   const [data, setData] = useState([]);
   const [username, setUsername] = useState('');
   const [userId, setUserId] = useState('');
@@ -158,29 +162,19 @@ const WOInstruction = ({navigation}) => {
   };
 
   const playDuplicateSound = () => {
-    const duplicateSound = new Sound(
-      require('../assets/sounds/invalid-selection.mp3'),
-      error => {
-        if (error) {
-          console.log('Failed to load the sound', error);
-          return;
-        }
-        duplicateSound.play();
-      },
-    );
+    try {
+      SoundPlayer.playSoundFile('invalid-selection', 'mp3');
+    } catch (error) {
+      console.log('Error playing duplicate sound:', error);
+    }
   };
 
   const playFailedSound = () => {
-    const failedSound = new Sound(
-      require('../assets/sounds/error-10.mp3'),
-      error => {
-        if (error) {
-          console.log('Failed to load the sound', error);
-          return;
-        }
-        failedSound.play();
-      },
-    );
+    try {
+      SoundPlayer.playSoundFile('error-10', 'mp3');
+    } catch (error) {
+      console.log('Error playing failed sound:', error);
+    }
     Vibration.vibrate(1500);
   };
 

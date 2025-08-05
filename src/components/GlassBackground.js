@@ -1,17 +1,49 @@
 import React from 'react';
 import {View, StyleSheet, Dimensions} from 'react-native';
-import {glassmorphismStyles} from '../styles/glassmorphism';
+import {createGlassmorphismStyles} from '../styles/glassmorphism';
+import {useTheme} from '../context/ThemeContext';
 
 const {width, height} = Dimensions.get('window');
 
 const GlassBackground = ({children, style}) => {
+  const {isDarkMode} = useTheme();
+  const glassmorphismStyles = createGlassmorphismStyles(isDarkMode);
+
   return (
     <View style={[styles.container, glassmorphismStyles.backgroundGradient, style]}>
       {/* Floating glass elements for background effect */}
-      <View style={[styles.floatingGlass, styles.glass1]} />
-      <View style={[styles.floatingGlass, styles.glass2]} />
-      <View style={[styles.floatingGlass, styles.glass3]} />
-      <View style={[styles.floatingGlass, styles.glass4]} />
+      <View style={[styles.floatingGlass, styles.glass1, {
+        backgroundColor: isDarkMode 
+          ? 'rgba(255, 255, 255, 0.05)' 
+          : 'rgba(0, 0, 0, 0.05)',
+        borderColor: isDarkMode 
+          ? 'rgba(255, 255, 255, 0.1)' 
+          : 'rgba(0, 0, 0, 0.1)',
+      }]} />
+      <View style={[styles.floatingGlass, styles.glass2, {
+        backgroundColor: isDarkMode 
+          ? 'rgba(255, 255, 255, 0.05)' 
+          : 'rgba(0, 0, 0, 0.05)',
+        borderColor: isDarkMode 
+          ? 'rgba(255, 255, 255, 0.1)' 
+          : 'rgba(0, 0, 0, 0.1)',
+      }]} />
+      <View style={[styles.floatingGlass, styles.glass3, {
+        backgroundColor: isDarkMode 
+          ? 'rgba(255, 255, 255, 0.05)' 
+          : 'rgba(0, 0, 0, 0.05)',
+        borderColor: isDarkMode 
+          ? 'rgba(255, 255, 255, 0.1)' 
+          : 'rgba(0, 0, 0, 0.1)',
+      }]} />
+      <View style={[styles.floatingGlass, styles.glass4, {
+        backgroundColor: isDarkMode 
+          ? 'rgba(255, 255, 255, 0.05)' 
+          : 'rgba(0, 0, 0, 0.05)',
+        borderColor: isDarkMode 
+          ? 'rgba(255, 255, 255, 0.1)' 
+          : 'rgba(0, 0, 0, 0.1)',
+      }]} />
       
       {/* Content */}
       <View style={styles.content}>
@@ -32,10 +64,8 @@ const styles = StyleSheet.create({
   },
   floatingGlass: {
     position: 'absolute',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 100,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   glass1: {
     width: 200,

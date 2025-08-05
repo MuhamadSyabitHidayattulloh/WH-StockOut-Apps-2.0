@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {ThemeProvider} from './src/context/ThemeContext';
 import Login from './src/pages/Login';
 import Home from './src/pages/Home';
 import Register from './src/pages/Register';
@@ -9,7 +10,7 @@ import FullCameraScan from './src/pages/FullCameraScan';
 
 const Stack = createNativeStackNavigator();
 
-const App = () => {
+const AppContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
 
@@ -83,6 +84,14 @@ const App = () => {
         )}
       </Stack.Navigator>
     </NavigationContainer>
+  );
+};
+
+const App = () => {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 };
 
