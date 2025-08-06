@@ -3,6 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {View, Text, ActivityIndicator} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ThemeProvider, useTheme} from './src/context/ThemeContext';
 import Login from './src/pages/Login';
 import Home from './src/pages/Home';
 import Register from './src/pages/Register';
@@ -15,21 +16,25 @@ import './global.css';
 
 const Stack = createNativeStackNavigator();
 
-const LoadingScreen = () => (
-  <View className="flex-1 bg-gray-900 items-center justify-center">
-    <View className="bg-gray-800/50 backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 items-center">
-      <View className="w-16 h-16 bg-blue-600 rounded-full items-center justify-center mb-4">
-        <ActivityIndicator size="large" color="#ffffff" />
+const LoadingScreen = () => {
+  const {colors} = useTheme();
+  
+  return (
+    <View style={{flex: 1, backgroundColor: colors.primary}} className="items-center justify-center">
+      <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 items-center">
+        <View className="w-16 h-16 bg-blue-600 rounded-full items-center justify-center mb-4">
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+        <Text style={{color: colors.text}} className="text-xl font-bold text-center mb-2">
+          WH StockOut Apps
+        </Text>
+        <Text style={{color: colors.textSecondary}} className="text-center">
+          Loading...
+        </Text>
       </View>
-      <Text className="text-white text-xl font-bold text-center mb-2">
-        WH StockOut Apps
-      </Text>
-      <Text className="text-gray-400 text-center">
-        Loading...
-      </Text>
     </View>
-  </View>
-);
+  );
+};
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -85,17 +90,19 @@ const App = () => {
     return <LoadingScreen />;
   }
 
+  const {colors} = useTheme();
+  
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#1f2937',
+            backgroundColor: colors.primary,
           },
-          headerTintColor: '#ffffff',
+          headerTintColor: colors.text,
           headerTitleStyle: {
             fontWeight: 'bold',
-            color: '#ffffff',
+            color: colors.text,
           },
         }}>
         {!permissionsGranted ? (
@@ -174,5 +181,13 @@ const App = () => {
   );
 };
 
-export default App;
+const AppWrapper = () => {
+  return (
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  );
+};
+
+export default AppWrapper;
 

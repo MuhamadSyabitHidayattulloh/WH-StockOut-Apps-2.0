@@ -16,8 +16,10 @@ import {checkUserIDAPI, registerAccountAPI} from '../api';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import md5 from 'md5';
 import {validateNPK, validatePassword, validateEmail, validateRequiredField, handleApiError} from '../function/General';
+import {useTheme} from '../context/ThemeContext';
 
 const Register = ({navigation}) => {
+  const {colors, isDarkMode} = useTheme();
   const [npk, setNpk] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -138,13 +140,14 @@ const Register = ({navigation}) => {
 
   const InputField = React.useCallback(({icon, placeholder, value, onChangeText, secureTextEntry = false, required = false, keyboardType = 'default', autoComplete = 'off', inputRef, onSubmitEditing}) => (
     <View className="mb-4">
-      <View className="bg-gray-700/50 rounded-xl border border-gray-600/50 flex-row items-center px-4">
-        <Icon name={icon} size={20} color="#9CA3AF" />
+      <View style={{backgroundColor: colors.surface}} className="rounded-xl border border-gray-600/50 flex-row items-center px-4">
+        <Icon name={icon} size={20} color={colors.textSecondary} />
         <TextInput
           ref={inputRef}
-          className="flex-1 text-white py-4 px-3"
+          style={{color: colors.text}}
+          className="flex-1 py-4 px-3"
           placeholder={placeholder + (required ? ' *' : '')}
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.textSecondary}
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
@@ -163,11 +166,11 @@ const Register = ({navigation}) => {
         />
       </View>
     </View>
-  ), []);
+  ), [colors]);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" backgroundColor="#1f2937" />
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.primary}}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={colors.primary} />
       
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -187,17 +190,17 @@ const Register = ({navigation}) => {
             <View className="w-20 h-20 bg-green-600 rounded-full items-center justify-center mb-4">
               <Icon name="person-add" size={40} color="#ffffff" />
             </View>
-            <Text className="text-3xl font-bold text-white mb-2">
+            <Text style={{color: colors.text}} className="text-3xl font-bold mb-2">
               Create Account
             </Text>
-            <Text className="text-gray-400 text-center">
+            <Text style={{color: colors.textSecondary}} className="text-center">
               Join WH StockOut Management System
             </Text>
           </View>
 
           {/* Registration Form */}
-          <View className="bg-gray-800/50 backdrop-blur-lg rounded-3xl p-6 border border-gray-700/50 mb-6">
-            <Text className="text-white text-lg font-semibold text-center mb-6">
+          <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-3xl p-6 border border-gray-700/50 mb-6">
+            <Text style={{color: colors.text}} className="text-lg font-semibold text-center mb-6">
               Fill in your information
             </Text>
             
@@ -314,14 +317,14 @@ const Register = ({navigation}) => {
             </TouchableOpacity>
 
             {/* Terms */}
-            <Text className="text-gray-400 text-xs text-center mb-4">
+            <Text style={{color: colors.textSecondary}} className="text-xs text-center mb-4">
               By creating an account, you agree to our Terms of Service and Privacy Policy
             </Text>
           </View>
 
           {/* Login Link */}
           <View className="flex-row justify-center">
-            <Text className="text-gray-400">Already have an account? </Text>
+            <Text style={{color: colors.textSecondary}}>Already have an account? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text className="text-green-400 font-medium">Sign In</Text>
             </TouchableOpacity>
@@ -329,7 +332,7 @@ const Register = ({navigation}) => {
 
           {/* Footer */}
           <View className="items-center mt-8 mb-4">
-            <Text className="text-gray-500 text-xs">
+            <Text style={{color: colors.textMuted}} className="text-xs">
               © PED - Denso Indonesia 2025
             </Text>
           </View>

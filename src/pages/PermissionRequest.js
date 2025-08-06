@@ -13,8 +13,10 @@ import {
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useTheme} from '../context/ThemeContext';
 
 const PermissionRequest = ({navigation}) => {
+  const {colors, isDarkMode} = useTheme();
   const [permissions, setPermissions] = useState({
     camera: false,
     storage: false,
@@ -141,8 +143,8 @@ const PermissionRequest = ({navigation}) => {
   const progress = ((currentStep + 1) / permissionSteps.length) * 100;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" backgroundColor="#111827" />
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.primary}}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={colors.primary} />
       
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="flex-1 px-6 py-8">
@@ -152,11 +154,11 @@ const PermissionRequest = ({navigation}) => {
               <Icon name="security" size={48} color="#3B82F6" />
             </View>
             
-            <Text className="text-white text-3xl font-bold text-center mb-2">
+            <Text style={{color: colors.text}} className="text-3xl font-bold text-center mb-2">
               Welcome to WH StockOut Apps
             </Text>
             
-            <Text className="text-gray-400 text-center text-lg">
+            <Text style={{color: colors.textSecondary}} className="text-center text-lg">
               Let's set up your app permissions
             </Text>
           </View>

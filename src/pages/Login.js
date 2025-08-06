@@ -18,8 +18,10 @@ import LottieView from 'lottie-react-native';
 import SoundPlayer from 'react-native-sound-player';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {validateNPK, validatePassword, handleApiError} from '../function/General';
+import {useTheme} from '../context/ThemeContext';
 
 const Login = ({navigation, onLogin}) => {
+  const {colors, isDarkMode} = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginAnimation, setLoginAnimation] = useState(false);
@@ -52,7 +54,7 @@ const Login = ({navigation, onLogin}) => {
   };
 
   const handleLogin = () => {
-    onLogin(username);
+    // onLogin(username);
     const data = {
       USERNAME: username,
       PASSWORD: password,
@@ -147,13 +149,14 @@ const Login = ({navigation, onLogin}) => {
   // Memoized InputField component
   const InputField = React.useCallback(({icon, placeholder, value, onChangeText, secureTextEntry = false, inputRef, onSubmitEditing, keyboardType = 'default', autoComplete = 'off'}) => (
     <View className="mb-4">
-      <View className="bg-gray-700/50 rounded-xl border border-gray-600/50 flex-row items-center px-4">
-        <Icon name={icon} size={20} color="#9CA3AF" />
+      <View style={{backgroundColor: colors.surface}} className="rounded-xl border border-gray-600/50 flex-row items-center px-4">
+        <Icon name={icon} size={20} color={colors.textSecondary} />
         <TextInput
           ref={inputRef}
-          className="flex-1 text-white py-4 px-3"
+          style={{color: colors.text}}
+          className="flex-1 py-4 px-3"
           placeholder={placeholder}
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.textSecondary}
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
@@ -172,7 +175,7 @@ const Login = ({navigation, onLogin}) => {
         />
       </View>
     </View>
-  ), []);
+  ), [colors]);
 
   const showLoginAnimation = () => {
     return new Promise((resolve, reject) => {
@@ -190,11 +193,11 @@ const Login = ({navigation, onLogin}) => {
     });
   };
 
-  return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" backgroundColor="#111827" />
+    return (
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.primary}}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={colors.primary} />
       
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
@@ -202,14 +205,14 @@ const Login = ({navigation, onLogin}) => {
         <View className="flex-1 px-6 py-8">
         {/* Header Section */}
         <View className="flex-1 justify-center items-center">
-          <View className="bg-gray-800/50 backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 items-center">
+          <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 items-center">
             <View className="w-16 h-16 bg-blue-600 rounded-full items-center justify-center mb-4">
               <Icon name="inventory" size={32} color="#ffffff" />
             </View>
-            <Text className="text-3xl font-bold text-white mb-2">
+            <Text style={{color: colors.text}} className="text-3xl font-bold mb-2">
               WH StockOut Apps
             </Text>
-            <Text className="text-gray-400 text-center text-sm">
+            <Text style={{color: colors.textSecondary}} className="text-center text-sm">
               Warehouse Management System
             </Text>
           </View>
@@ -217,14 +220,14 @@ const Login = ({navigation, onLogin}) => {
 
         {/* Form Section */}
         <View className="flex-2 justify-center">
-          <View className="bg-gray-800/50 backdrop-blur-lg rounded-3xl p-6 border border-gray-700/50">
-            <Text className="text-white text-lg font-semibold text-center mb-6">
+          <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-3xl p-6 border border-gray-700/50">
+            <Text style={{color: colors.text}} className="text-lg font-semibold text-center mb-6">
               Please login to your account
             </Text>
             
             {/* Username Input */}
             <View className="mb-4">
-              <Text className="text-gray-300 text-sm font-medium mb-2">NPK</Text>
+              <Text style={{color: colors.textSecondary}} className="text-sm font-medium mb-2">NPK</Text>
               <InputField
                 icon="person"
                 placeholder="Enter your NPK"
@@ -239,7 +242,7 @@ const Login = ({navigation, onLogin}) => {
 
             {/* Password Input */}
             <View className="mb-6">
-              <Text className="text-gray-300 text-sm font-medium mb-2">Password</Text>
+              <Text style={{color: colors.textSecondary}} className="text-sm font-medium mb-2">Password</Text>
               <InputField
                 icon="lock"
                 placeholder="Enter your password"
@@ -273,19 +276,19 @@ const Login = ({navigation, onLogin}) => {
 
             {/* Register Button */}
             <TouchableOpacity
-              className="bg-gray-700/50 rounded-xl py-4 items-center border border-gray-600/50 flex-row justify-center"
+              style={{backgroundColor: colors.surface}} className="rounded-xl py-4 items-center border border-gray-600/50 flex-row justify-center"
               onPress={() => navigation.navigate('Register')}
               activeOpacity={0.8}>
-              <Icon name="person-add" size={20} color="#9CA3AF" />
-              <Text className="text-gray-300 font-semibold text-lg ml-2">Register</Text>
+              <Icon name="person-add" size={20} color={colors.textSecondary} />
+              <Text style={{color: colors.textSecondary}} className="font-semibold text-lg ml-2">Register</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Footer */}
         <View className="items-center pb-4">
-          <View className="bg-gray-800/30 rounded-2xl px-4 py-2">
-            <Text className="text-gray-400 text-xs">
+          <View style={{backgroundColor: colors.card}} className="rounded-2xl px-4 py-2">
+            <Text style={{color: colors.textSecondary}} className="text-xs">
               © PED - Denso Indonesia 2025
             </Text>
           </View>
@@ -315,22 +318,22 @@ const Login = ({navigation, onLogin}) => {
         visible={showQrLogin}
         onRequestClose={() => setShowQrLogin(false)}>
         <View className="flex-1 bg-black/80 justify-center items-center">
-          <View className="bg-gray-800/90 backdrop-blur-lg rounded-3xl p-6 border border-gray-700/50 w-11/12 max-w-md">
+          <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-3xl p-6 border border-gray-700/50 w-11/12 max-w-md">
             <View className="items-center mb-6">
               <View className="w-16 h-16 bg-green-600 rounded-full items-center justify-center mb-4">
                 <Icon name="qr-code-scanner" size={32} color="#ffffff" />
               </View>
-              <Text className="text-2xl font-bold text-white mb-2">
+              <Text style={{color: colors.text}} className="text-2xl font-bold mb-2">
                 QR Code Login
               </Text>
-              <Text className="text-gray-400 text-center">
+              <Text style={{color: colors.textSecondary}} className="text-center">
                 Scan your QR code to login quickly
               </Text>
             </View>
 
             {/* QR Code Input */}
             <View className="mb-6">
-              <Text className="text-gray-300 text-sm font-medium mb-2">QR Code</Text>
+              <Text style={{color: colors.textSecondary}} className="text-sm font-medium mb-2">QR Code</Text>
               <InputField
                 icon="qr-code"
                 placeholder="Enter or scan QR code"
@@ -371,13 +374,13 @@ const Login = ({navigation, onLogin}) => {
               </TouchableOpacity>
               
               <TouchableOpacity
-                className="flex-1 bg-gray-600 rounded-xl py-4 items-center"
+                style={{backgroundColor: colors.surface}} className="flex-1 rounded-xl py-4 items-center"
                 onPress={() => {
                   setShowQrLogin(false);
                   setQrCode('');
                 }}
                 activeOpacity={0.8}>
-                <Text className="text-white font-semibold text-lg">Cancel</Text>
+                <Text style={{color: colors.text}} className="font-semibold text-lg">Cancel</Text>
               </TouchableOpacity>
             </View>
 

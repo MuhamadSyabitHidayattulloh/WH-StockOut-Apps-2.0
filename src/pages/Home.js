@@ -10,8 +10,10 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useTheme} from '../context/ThemeContext';
 
 const Home = ({navigation, onLogout}) => {
+  const {colors, isDarkMode} = useTheme();
   const [username, setUsername] = useState('');
 
   useFocusEffect(
@@ -38,11 +40,11 @@ const Home = ({navigation, onLogout}) => {
         <TouchableOpacity
           onPress={handleLogout}
           className="mr-4 p-2 bg-red-600/20 rounded-lg">
-          <Icon name="logout" size={24} color="#ffffff" />
+          <Icon name="logout" size={24} color={colors.text} />
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [navigation, colors]);
 
   const menuItems = [
     {
@@ -69,19 +71,19 @@ const Home = ({navigation, onLogout}) => {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" backgroundColor="#1f2937" />
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.primary}}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={colors.primary} />
       
       <ScrollView className="flex-1">
         <View className="p-6">
           {/* Welcome Section */}
           <View className="mb-8">
-            <View className="bg-gray-800/50 backdrop-blur-lg rounded-3xl p-6 border border-gray-700/50">
+            <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-3xl p-6 border border-gray-700/50">
               <View className="items-center">
                 <View className="w-20 h-20 bg-blue-600 rounded-full items-center justify-center mb-4">
                   <Icon name="person" size={40} color="#ffffff" />
                 </View>
-                <Text className="text-2xl font-bold text-white mb-2">
+                <Text style={{color: colors.text}} className="text-2xl font-bold mb-2">
                   Welcome Back
                 </Text>
                 <Text className="text-blue-400 text-lg font-semibold">
@@ -93,7 +95,7 @@ const Home = ({navigation, onLogout}) => {
 
           {/* Menu Section */}
           <View className="mb-6">
-            <Text className="text-white text-xl font-bold mb-4">
+            <Text style={{color: colors.text}} className="text-xl font-bold mb-4">
               Quick Actions
             </Text>
             
@@ -101,7 +103,8 @@ const Home = ({navigation, onLogout}) => {
               {menuItems.map((item, index) => (
                 <TouchableOpacity
                   key={index}
-                  className="bg-gray-800/50 backdrop-blur-lg rounded-2xl p-4 border border-gray-700/50"
+                  style={{backgroundColor: colors.card}}
+                  className="backdrop-blur-lg rounded-2xl p-4 border border-gray-700/50"
                   onPress={() => navigation.navigate(item.navigateTo)}
                   activeOpacity={0.8}>
                   <View className="flex-row items-center">
@@ -109,14 +112,14 @@ const Home = ({navigation, onLogout}) => {
                       <Icon name={item.icon} size={28} color="#ffffff" />
                     </View>
                     <View className="flex-1">
-                      <Text className="text-white text-lg font-semibold mb-1">
+                      <Text style={{color: colors.text}} className="text-lg font-semibold mb-1">
                         {item.title}
                       </Text>
-                      <Text className="text-gray-400 text-sm">
+                      <Text style={{color: colors.textSecondary}} className="text-sm">
                         {item.subtitle}
                       </Text>
                     </View>
-                    <Icon name="arrow-forward-ios" size={20} color="#9CA3AF" />
+                    <Icon name="arrow-forward-ios" size={20} color={colors.textSecondary} />
                   </View>
                 </TouchableOpacity>
               ))}
@@ -125,8 +128,8 @@ const Home = ({navigation, onLogout}) => {
 
           {/* Stats Section */}
           <View className="mb-6">
-            <View className="bg-gray-800/50 backdrop-blur-lg rounded-2xl p-6 border border-gray-700/50">
-              <Text className="text-white text-lg font-semibold text-center mb-4">
+            <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-2xl p-6 border border-gray-700/50">
+              <Text style={{color: colors.text}} className="text-lg font-semibold text-center mb-4">
                 System Status
               </Text>
               <View className="flex-row justify-around">
@@ -134,19 +137,19 @@ const Home = ({navigation, onLogout}) => {
                   <View className="w-12 h-12 bg-green-600 rounded-full items-center justify-center mb-2">
                     <Icon name="check-circle" size={24} color="#ffffff" />
                   </View>
-                  <Text className="text-gray-300 text-sm">Online</Text>
+                  <Text style={{color: colors.textSecondary}} className="text-sm">Online</Text>
                 </View>
                 <View className="items-center">
                   <View className="w-12 h-12 bg-blue-600 rounded-full items-center justify-center mb-2">
                     <Icon name="sync" size={24} color="#ffffff" />
                   </View>
-                  <Text className="text-gray-300 text-sm">Synced</Text>
+                  <Text style={{color: colors.textSecondary}} className="text-sm">Synced</Text>
                 </View>
                 <View className="items-center">
                   <View className="w-12 h-12 bg-purple-600 rounded-full items-center justify-center mb-2">
                     <Icon name="security" size={24} color="#ffffff" />
                   </View>
-                  <Text className="text-gray-300 text-sm">Secure</Text>
+                  <Text style={{color: colors.textSecondary}} className="text-sm">Secure</Text>
                 </View>
               </View>
             </View>

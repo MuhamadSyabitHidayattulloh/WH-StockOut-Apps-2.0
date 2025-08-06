@@ -23,6 +23,7 @@ import FastImage from '@d11/react-native-fast-image';
 import LottieView from 'lottie-react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useTheme} from '../context/ThemeContext';
 import {handleApiError} from '../function/General';
 
 const WOInstruction = ({navigation}) => {

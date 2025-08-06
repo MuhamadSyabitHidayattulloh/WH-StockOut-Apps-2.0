@@ -11,9 +11,10 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useTheme} from '../context/ThemeContext';
 
 const Settings = ({navigation}) => {
-  const [darkMode, setDarkMode] = useState(true);
+  const {isDarkMode, toggleTheme, colors} = useTheme();
   const [notifications, setNotifications] = useState(true);
   const [autoSync, setAutoSync] = useState(false);
 
@@ -23,11 +24,9 @@ const Settings = ({navigation}) => {
 
   const loadSettings = async () => {
     try {
-      const savedDarkMode = await AsyncStorage.getItem('darkMode');
       const savedNotifications = await AsyncStorage.getItem('notifications');
       const savedAutoSync = await AsyncStorage.getItem('autoSync');
       
-      if (savedDarkMode !== null) setDarkMode(JSON.parse(savedDarkMode));
       if (savedNotifications !== null) setNotifications(JSON.parse(savedNotifications));
       if (savedAutoSync !== null) setAutoSync(JSON.parse(savedAutoSync));
     } catch (error) {
@@ -44,9 +43,8 @@ const Settings = ({navigation}) => {
   };
 
   const handleDarkModeToggle = (value) => {
-    setDarkMode(value);
-    saveSetting('darkMode', value);
-    Alert.alert('Theme Changed', 'App will apply the new theme on next restart.');
+    toggleTheme();
+    Alert.alert('Theme Changed', 'Theme has been updated successfully!');
   };
 
   const handleNotificationsToggle = (value) => {
@@ -82,15 +80,15 @@ const Settings = ({navigation}) => {
   };
 
   const SettingItem = ({icon, title, subtitle, rightComponent}) => (
-    <View className="bg-gray-800/50 backdrop-blur-lg rounded-2xl p-4 border border-gray-700/50 mb-4">
+    <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-2xl p-4 border border-gray-700/50 mb-4">
       <View className="flex-row items-center">
-        <View className="w-12 h-12 bg-gray-700 rounded-xl items-center justify-center mr-4">
-          <Icon name={icon} size={24} color="#9CA3AF" />
+        <View style={{backgroundColor: colors.surface}} className="w-12 h-12 rounded-xl items-center justify-center mr-4">
+          <Icon name={icon} size={24} color={colors.textSecondary} />
         </View>
         <View className="flex-1">
-          <Text className="text-white text-lg font-semibold">{title}</Text>
+          <Text style={{color: colors.text}} className="text-lg font-semibold">{title}</Text>
           {subtitle && (
-            <Text className="text-gray-400 text-sm mt-1">{subtitle}</Text>
+            <Text style={{color: colors.textSecondary}} className="text-sm mt-1">{subtitle}</Text>
           )}
         </View>
         {rightComponent}
@@ -99,21 +97,21 @@ const Settings = ({navigation}) => {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" backgroundColor="#1f2937" />
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.primary}}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={colors.primary} />
       
       <ScrollView className="flex-1 p-6">
         {/* Header */}
         <View className="mb-8">
-          <Text className="text-white text-2xl font-bold">Settings</Text>
-          <Text className="text-gray-400 text-sm mt-1">
+          <Text style={{color: colors.text}} className="text-2xl font-bold">Settings</Text>
+          <Text style={{color: colors.textSecondary}} className="text-sm mt-1">
             Customize your app experience
           </Text>
         </View>
 
         {/* Appearance Section */}
         <View className="mb-6">
-          <Text className="text-white text-lg font-semibold mb-4">Appearance</Text>
+          <Text style={{color: colors.text}} className="text-lg font-semibold mb-4">Appearance</Text>
           
           <SettingItem
             icon="dark-mode"
@@ -121,10 +119,10 @@ const Settings = ({navigation}) => {
             subtitle="Use dark theme throughout the app"
             rightComponent={
               <Switch
-                value={darkMode}
+                value={isDarkMode}
                 onValueChange={handleDarkModeToggle}
-                trackColor={{false: '#374151', true: '#3B82F6'}}
-                thumbColor={darkMode ? '#ffffff' : '#9CA3AF'}
+                trackColor={{false: colors.surface, true: colors.accent}}
+                thumbColor={isDarkMode ? '#ffffff' : colors.textSecondary}
               />
             }
           />
@@ -132,7 +130,7 @@ const Settings = ({navigation}) => {
 
         {/* Notifications Section */}
         <View className="mb-6">
-          <Text className="text-white text-lg font-semibold mb-4">Notifications</Text>
+          <Text style={{color: colors.text}} className="text-lg font-semibold mb-4">Notifications</Text>
           
           <SettingItem
             icon="notifications"
@@ -142,8 +140,8 @@ const Settings = ({navigation}) => {
               <Switch
                 value={notifications}
                 onValueChange={handleNotificationsToggle}
-                trackColor={{false: '#374151', true: '#3B82F6'}}
-                thumbColor={notifications ? '#ffffff' : '#9CA3AF'}
+                trackColor={{false: colors.surface, true: colors.accent}}
+                thumbColor={notifications ? '#ffffff' : colors.textSecondary}
               />
             }
           />
@@ -151,7 +149,7 @@ const Settings = ({navigation}) => {
 
         {/* Data Section */}
         <View className="mb-6">
-          <Text className="text-white text-lg font-semibold mb-4">Data & Storage</Text>
+          <Text style={{color: colors.text}} className="text-lg font-semibold mb-4">Data & Storage</Text>
           
           <SettingItem
             icon="sync"
@@ -161,8 +159,8 @@ const Settings = ({navigation}) => {
               <Switch
                 value={autoSync}
                 onValueChange={handleAutoSyncToggle}
-                trackColor={{false: '#374151', true: '#3B82F6'}}
-                thumbColor={autoSync ? '#ffffff' : '#9CA3AF'}
+                trackColor={{false: colors.surface, true: colors.accent}}
+                thumbColor={autoSync ? '#ffffff' : colors.textSecondary}
               />
             }
           />
@@ -173,7 +171,7 @@ const Settings = ({navigation}) => {
               title="Clear Cache"
               subtitle="Free up storage space"
               rightComponent={
-                <Icon name="arrow-forward-ios" size={20} color="#9CA3AF" />
+                <Icon name="arrow-forward-ios" size={20} color={colors.textSecondary} />
               }
             />
           </TouchableOpacity>
@@ -181,7 +179,7 @@ const Settings = ({navigation}) => {
 
         {/* About Section */}
         <View className="mb-6">
-          <Text className="text-white text-lg font-semibold mb-4">Information</Text>
+          <Text style={{color: colors.text}} className="text-lg font-semibold mb-4">Information</Text>
           
           <TouchableOpacity onPress={() => navigation.navigate('About')}>
             <SettingItem
@@ -189,7 +187,7 @@ const Settings = ({navigation}) => {
               title="About App"
               subtitle="Version, developer info, and more"
               rightComponent={
-                <Icon name="arrow-forward-ios" size={20} color="#9CA3AF" />
+                <Icon name="arrow-forward-ios" size={20} color={colors.textSecondary} />
               }
             />
           </TouchableOpacity>
@@ -197,10 +195,10 @@ const Settings = ({navigation}) => {
 
         {/* Footer */}
         <View className="items-center mt-8 mb-4">
-          <Text className="text-gray-500 text-xs">
+          <Text style={{color: colors.textMuted}} className="text-xs">
             WH StockOut Apps v2.0.0
           </Text>
-          <Text className="text-gray-500 text-xs mt-1">
+          <Text style={{color: colors.textMuted}} className="text-xs mt-1">
             © PED - Denso Indonesia 2025
           </Text>
         </View>

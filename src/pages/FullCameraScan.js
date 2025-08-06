@@ -16,8 +16,10 @@ import {
 } from 'react-native-vision-camera';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useTheme} from '../context/ThemeContext';
 
 const FullCameraScan = ({navigation, route}) => {
+  const {colors, isDarkMode} = useTheme();
   const [hasPermission, setHasPermission] = useState(false);
   const [isActive, setIsActive] = useState(true);
   const [flashOn, setFlashOn] = useState(false);
@@ -120,20 +122,20 @@ const FullCameraScan = ({navigation, route}) => {
 
   if (!hasPermission) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900">
-        <StatusBar barStyle="light-content" backgroundColor="#111827" />
+      <SafeAreaView style={{flex: 1, backgroundColor: colors.primary}}>
+        <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={colors.primary} />
         
         <View className="flex-1 justify-center items-center p-6">
-          <View className="bg-gray-800/50 backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 items-center">
+          <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 items-center">
             <View className="w-20 h-20 bg-red-600 rounded-full items-center justify-center mb-6">
               <Icon name="camera-alt" size={40} color="#ffffff" />
             </View>
             
-            <Text className="text-white text-2xl font-bold text-center mb-4">
+            <Text style={{color: colors.text}} className="text-2xl font-bold text-center mb-4">
               Camera Permission Required
             </Text>
             
-            <Text className="text-gray-400 text-center mb-8 leading-6">
+            <Text style={{color: colors.textSecondary}} className="text-center mb-8 leading-6">
               This app needs camera access to scan QR codes for stock out operations. 
               Please grant camera permission to continue.
             </Text>
@@ -150,11 +152,12 @@ const FullCameraScan = ({navigation, route}) => {
               </TouchableOpacity>
               
               <TouchableOpacity
-                className="bg-gray-700 rounded-xl py-4 flex-row items-center justify-center"
+                style={{backgroundColor: colors.surface}}
+                className="rounded-xl py-4 flex-row items-center justify-center"
                 onPress={openSettings}
                 activeOpacity={0.8}>
-                <Icon name="settings" size={20} color="#ffffff" />
-                <Text className="text-white font-semibold text-lg ml-2">
+                <Icon name="settings" size={20} color={colors.text} />
+                <Text style={{color: colors.text}} className="font-semibold text-lg ml-2">
                   Open Settings
                 </Text>
               </TouchableOpacity>
@@ -177,20 +180,20 @@ const FullCameraScan = ({navigation, route}) => {
 
   if (!device) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900">
-        <StatusBar barStyle="light-content" backgroundColor="#111827" />
+      <SafeAreaView style={{flex: 1, backgroundColor: colors.primary}}>
+        <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={colors.primary} />
         
         <View className="flex-1 justify-center items-center p-6">
-          <View className="bg-gray-800/50 backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 items-center">
+          <View style={{backgroundColor: colors.card}} className="backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 items-center">
             <View className="w-20 h-20 bg-yellow-600 rounded-full items-center justify-center mb-6">
               <Icon name="camera-alt" size={40} color="#ffffff" />
             </View>
             
-            <Text className="text-white text-2xl font-bold text-center mb-4">
+            <Text style={{color: colors.text}} className="text-2xl font-bold text-center mb-4">
               Camera Not Available
             </Text>
             
-            <Text className="text-gray-400 text-center mb-8">
+            <Text style={{color: colors.textSecondary}} className="text-center mb-8">
               No camera device found on this device.
             </Text>
             
