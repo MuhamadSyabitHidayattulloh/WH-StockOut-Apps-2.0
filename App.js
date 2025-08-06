@@ -120,6 +120,13 @@ const App = () => {
                 title: 'Create Account',
               }}
             />
+            <Stack.Screen
+              name="Full Camera Scan"
+              component={FullCameraScan}
+              options={{
+                headerShown: false,
+              }}
+            />
           </>
         ) : (
           // Main App Screens

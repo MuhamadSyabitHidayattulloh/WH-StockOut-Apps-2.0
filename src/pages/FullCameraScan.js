@@ -22,7 +22,37 @@ const FullCameraScan = ({navigation, route}) => {
   const [isActive, setIsActive] = useState(true);
   const [flashOn, setFlashOn] = useState(false);
   const devices = useCameraDevices();
-  const device = devices.back;
+  
+  // Helper function to get the best available camera device
+  const getBestCameraDevice = (devices) => {
+    // Priority: back camera first, then any available device
+    if (devices.back) {
+      return devices.back;
+    }
+    
+    // Get all available devices and find back camera by position
+    const availableDevices = Object.values(devices).filter(d => d !== undefined);
+    
+    // Look for back camera by checking device properties
+    const backCamera = availableDevices.find(device => 
+      device.position === 'back' || 
+      device.hasFlash || 
+      device.supportsLowLightBoost === false
+    );
+    
+    if (backCamera) {
+      return backCamera;
+    }
+    
+    // Fallback to first available device
+    if (availableDevices.length > 0) {
+      return availableDevices[0];
+    }
+    
+    return null;
+  };
+  
+  const device = getBestCameraDevice(devices);
   const appState = useRef(AppState.currentState);
 
   const {scanRead} = route.params || {};
@@ -58,7 +88,6 @@ const FullCameraScan = ({navigation, route}) => {
         setHasPermission(false);
       }
     } catch (error) {
-      console.log('Permission error:', error);
       setHasPermission(false);
     }
   };

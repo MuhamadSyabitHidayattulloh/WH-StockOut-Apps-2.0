@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -8,21 +8,58 @@ import {
   StatusBar,
   Alert,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import axios from 'axios';
 import {checkUserIDAPI, registerAccountAPI} from '../api';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import md5 from 'md5';
+import {validateNPK, validatePassword, validateEmail, validateRequiredField, handleApiError} from '../function/General';
 
 const Register = ({navigation}) => {
   const [npk, setNpk] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [company, setCompany] = useState('');
+  const [plant, setPlant] = useState('');
+  const [buCode, setBuCode] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Refs for input fields
+  const npkRef = useRef(null);
+  const nameRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
+  const companyRef = useRef(null);
+  const plantRef = useRef(null);
+  const buCodeRef = useRef(null);
+  const emailRef = useRef(null);
 
   const handleRegister = async () => {
-    if (!npk || !name || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
+    // Validate all required fields
+    const npkValidation = validateNPK(npk);
+    const passwordValidation = validatePassword(password);
+    const nameValidation = validateRequiredField(name, 'Name');
+    const companyValidation = validateRequiredField(company, 'Company Code');
+    const plantValidation = validateRequiredField(plant, 'Plant Code');
+    const buCodeValidation = validateRequiredField(buCode, 'BU Code');
+    const emailValidation = validateEmail(email);
+
+    if (!npkValidation.isValid) {
+      Alert.alert('Error', npkValidation.message);
+      return;
+    }
+
+    if (!nameValidation.isValid) {
+      Alert.alert('Error', nameValidation.message);
+      return;
+    }
+
+    if (!passwordValidation.isValid) {
+      Alert.alert('Error', passwordValidation.message);
       return;
     }
 
@@ -31,8 +68,23 @@ const Register = ({navigation}) => {
       return;
     }
 
-    if (password.length < 4) {
-      Alert.alert('Error', 'Password must be at least 4 characters');
+    if (!companyValidation.isValid) {
+      Alert.alert('Error', companyValidation.message);
+      return;
+    }
+
+    if (!plantValidation.isValid) {
+      Alert.alert('Error', plantValidation.message);
+      return;
+    }
+
+    if (!buCodeValidation.isValid) {
+      Alert.alert('Error', buCodeValidation.message);
+      return;
+    }
+
+    if (!emailValidation.isValid) {
+      Alert.alert('Error', emailValidation.message);
       return;
     }
 
@@ -40,23 +92,29 @@ const Register = ({navigation}) => {
     try {
       // Check if NPK already exists
       const checkResponse = await axios.post(checkUserIDAPI, {
-        NPK: npk,
+        userID: npk,
       });
 
-      if (checkResponse.data.success) {
+      // Backend returns "userExisted" or "notExisted" as string
+      if (checkResponse.data === "userExisted") {
         Alert.alert('Error', 'NPK already registered');
         setLoading(false);
         return;
       }
 
-      // Register new account
+      // Register new account with all required fields
       const registerResponse = await axios.post(registerAccountAPI, {
-        NPK: npk,
-        NAME: name,
-        PASSWORD: password,
+        userID: npk,
+        password: password, // Backend will hash this with md5
+        name: name,
+        company: company,
+        plant: plant,
+        buCode: buCode,
+        email: email || '-', // Default value if empty
       });
 
-      if (registerResponse.data.success) {
+      // Backend returns "addedNewUser" or "failedToAddNewUser" as string
+      if (registerResponse.data === "addedNewUser") {
         Alert.alert(
           'Success',
           'Account created successfully! Please login with your credentials.',
@@ -71,34 +129,58 @@ const Register = ({navigation}) => {
         Alert.alert('Error', 'Registration failed. Please try again.');
       }
     } catch (error) {
-      Alert.alert('Error', 'Registration failed. Please check your connection.');
+      const errorInfo = handleApiError(error);
+      Alert.alert('Error', errorInfo.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const InputField = ({icon, placeholder, value, onChangeText, secureTextEntry = false}) => (
+  const InputField = React.useCallback(({icon, placeholder, value, onChangeText, secureTextEntry = false, required = false, keyboardType = 'default', autoComplete = 'off', inputRef, onSubmitEditing}) => (
     <View className="mb-4">
       <View className="bg-gray-700/50 rounded-xl border border-gray-600/50 flex-row items-center px-4">
         <Icon name={icon} size={20} color="#9CA3AF" />
         <TextInput
+          ref={inputRef}
           className="flex-1 text-white py-4 px-3"
-          placeholder={placeholder}
+          placeholder={placeholder + (required ? ' *' : '')}
           placeholderTextColor="#9CA3AF"
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
           autoCapitalize={secureTextEntry ? 'none' : 'words'}
+          keyboardType={keyboardType}
+          autoComplete={autoComplete}
+          autoCorrect={false}
+          spellCheck={false}
+          blurOnSubmit={false}
+          returnKeyType="next"
+          enablesReturnKeyAutomatically={true}
+          onSubmitEditing={onSubmitEditing}
+          contextMenuHidden={true}
+          selectTextOnFocus={false}
+          caretHidden={false}
         />
       </View>
     </View>
-  );
+  ), []);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-900">
       <StatusBar barStyle="light-content" backgroundColor="#1f2937" />
       
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView 
+          className="flex-1" 
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="none"
+          contentContainerStyle={{flexGrow: 1}}
+        >
         <View className="p-6">
           {/* Header */}
           <View className="items-center mb-8 mt-4">
@@ -124,6 +206,11 @@ const Register = ({navigation}) => {
               placeholder="NPK (Employee ID)"
               value={npk}
               onChangeText={setNpk}
+              required={true}
+              inputRef={npkRef}
+              keyboardType="default"
+              autoComplete="username"
+              onSubmitEditing={() => nameRef.current?.focus()}
             />
             
             <InputField
@@ -131,6 +218,11 @@ const Register = ({navigation}) => {
               placeholder="Full Name"
               value={name}
               onChangeText={setName}
+              required={true}
+              inputRef={nameRef}
+              keyboardType="default"
+              autoComplete="name"
+              onSubmitEditing={() => passwordRef.current?.focus()}
             />
             
             <InputField
@@ -139,6 +231,11 @@ const Register = ({navigation}) => {
               value={password}
               onChangeText={setPassword}
               secureTextEntry
+              required={true}
+              inputRef={passwordRef}
+              keyboardType="default"
+              autoComplete="password"
+              onSubmitEditing={() => confirmPasswordRef.current?.focus()}
             />
             
             <InputField
@@ -147,6 +244,59 @@ const Register = ({navigation}) => {
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry
+              required={true}
+              inputRef={confirmPasswordRef}
+              keyboardType="default"
+              autoComplete="password"
+              onSubmitEditing={() => companyRef.current?.focus()}
+            />
+
+            <InputField
+              icon="business"
+              placeholder="Company Code"
+              value={company}
+              onChangeText={setCompany}
+              required={true}
+              inputRef={companyRef}
+              keyboardType="default"
+              autoComplete="off"
+              onSubmitEditing={() => plantRef.current?.focus()}
+            />
+
+            <InputField
+              icon="location-on"
+              placeholder="Plant Code"
+              value={plant}
+              onChangeText={setPlant}
+              required={true}
+              inputRef={plantRef}
+              keyboardType="default"
+              autoComplete="off"
+              onSubmitEditing={() => buCodeRef.current?.focus()}
+            />
+
+            <InputField
+              icon="code"
+              placeholder="BU Code"
+              value={buCode}
+              onChangeText={setBuCode}
+              required={true}
+              inputRef={buCodeRef}
+              keyboardType="default"
+              autoComplete="off"
+              onSubmitEditing={() => emailRef.current?.focus()}
+            />
+
+            <InputField
+              icon="email"
+              placeholder="Email (Optional)"
+              value={email}
+              onChangeText={setEmail}
+              required={false}
+              inputRef={emailRef}
+              keyboardType="email-address"
+              autoComplete="email"
+              onSubmitEditing={() => emailRef.current?.blur()}
             />
 
             {/* Register Button */}
@@ -184,7 +334,8 @@ const Register = ({navigation}) => {
             </Text>
           </View>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

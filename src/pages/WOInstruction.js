@@ -23,6 +23,7 @@ import FastImage from '@d11/react-native-fast-image';
 import LottieView from 'lottie-react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {handleApiError} from '../function/General';
 
 const WOInstruction = ({navigation}) => {
   const [data, setData] = useState([]);
@@ -91,18 +92,41 @@ const WOInstruction = ({navigation}) => {
         return;
       }
 
-      const newData = {
-        imgData: e,
-        timeScan: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-        NPK: userId,
-        partNumber: oneWayKanbanQR.getPartNumber(),
-        qty: oneWayKanbanQR.getQtyPerKanban(),
-        processId: generateProcessId(),
-      };
+      // Validate QR code data
+      try {
+        const partNumber = oneWayKanbanQR.getPartNumber();
+        const qty = oneWayKanbanQR.getQtyPerKanban();
+        const whCode = oneWayKanbanQR.getWhCode();
+        const uniqueCode = oneWayKanbanQR.getUniqueCode();
 
-      const updatedData = [newData, ...currentData];
-      await AsyncStorage.setItem('stockOutData', JSON.stringify(updatedData));
-      setData(updatedData);
+        // Validate required fields
+        if (!partNumber || !qty || !whCode || !uniqueCode) {
+          showWrongQR();
+          return;
+        }
+
+        // Validate quantity is positive number
+        if (isNaN(qty) || qty <= 0) {
+          showWrongQR();
+          return;
+        }
+
+        const newData = {
+          imgData: e,
+          timeScan: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+          NPK: userId,
+          partNumber: partNumber,
+          qty: qty,
+          processId: generateProcessId(),
+        };
+
+        const updatedData = [...currentData, newData];
+        await AsyncStorage.setItem('stockOutData', JSON.stringify(updatedData));
+        setData(updatedData);
+      } catch (error) {
+        console.error('QR validation error:', error);
+        showWrongQR();
+      }
     } else {
       showWrongQR();
     }
@@ -138,18 +162,25 @@ const WOInstruction = ({navigation}) => {
       const slip = generateSlipNumber();
       
       try {
-        await axios.post(whStockoutApi, {
+        const response = await axios.post(whStockoutApi, {
           data: data,
           slip: slip,
         });
         
-        await AsyncStorage.clear();
-        setData([]);
-        setLoading(false);
-        Alert.alert('Success', 'Data submitted successfully');
+        // Check if backend response is successful
+        if (response.data.msg === "Stockout Success") {
+          await AsyncStorage.removeItem('stockOutData');
+          setData([]);
+          setLoading(false);
+          Alert.alert('Success', 'Data submitted successfully');
+        } else {
+          setLoading(false);
+          Alert.alert('Error', response.data.msg || 'Something went wrong');
+        }
       } catch (error) {
         setLoading(false);
-        Alert.alert('Error', 'Something went wrong');
+        const errorInfo = handleApiError(error);
+        Alert.alert('Error', errorInfo.message);
       }
     } else {
       Alert.alert('Error', 'Data tidak boleh kosong!');
